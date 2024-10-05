@@ -4,301 +4,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expanded English Quiz</title>
+    <title>Enhanced English Quiz</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery -->
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- SortableJS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <!-- jQuery Library (Ensure this is loaded before any custom JS scripts) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        .correct-answer {
-            border: 2px solid #28a745;
-            background-color: #d4edda;
-        }
-
-        .wrong-answer {
-            border: 2px solid #dc3545;
-            background-color: #f8d7da;
-        }
-
-        .drag-container {
-            border: 2px dashed #007bff;
-            padding: 10px;
-            min-height: 50px;
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .draggable-item {
-            padding: 5px 10px;
-            border: 1px solid #007bff;
-            margin: 5px;
-            cursor: grab;
-            background-color: #e2e6ea;
-        }
-    </style>
 </head>
 
 <body class="bg-light">
     <div class="container my-5">
-        <h1 class="text-center mb-4">Expanded English Quiz</h1>
-        <form id="quizForm">
+        <h1 class="text-center mb-4">Enhanced English Quiz</h1>
+        <div id="progressBarContainer" class="progress mt-3 mb-4">
+            <div id="progressBar" class="progress-bar progress-bar-striped bg-success" role="progressbar"
+                style="width: 0%;">0%</div>
+        </div>
+        <div id="quizContainer">
             <!-- Quiz questions will be generated here -->
-        </form>
+        </div>
+        <div class="d-flex justify-content-between mt-4">
+            <button type="button" id="prevBtn" class="btn btn-secondary">Previous</button>
+            <button type="button" id="nextBtn" class="btn btn-secondary">Next</button>
+        </div>
         <button type="submit" id="submitBtn" class="btn btn-primary mt-4">Submit Answers</button>
+        <button type="button" id="restartBtn" class="btn btn-info mt-4" style="display: none;">Restart Quiz</button>
         <div id="result" class="mt-4"></div>
     </div>
 
-    <!-- jQuery and Bootstrap JavaScript -->
-    <script>
-        $(document).ready(function () {
-            // Define quiz questions directly in JavaScript
-            const quizData = [
-                {
-                    type: "mcq",
-                    question: "What is the plural form of 'child'?",
-                    options: ["Childs", "Children", "Childes", "Childrens"],
-                    correctAnswer: 1,
-                    explanation: "Правильна відповідь - Children. 'Child' має неправильну множину."
-                },
-                {
-                    type: "fill-in-the-blank",
-                    question: "What is the past tense of 'go'?",
-                    correctAnswer: "went",
-                    explanation: "Правильна відповідь - Went. 'Go' має неправильну форму минулого часу."
-                },
-                {
-                    type: "drag-and-drop",
-                    question: "Arrange the words to form a correct sentence: 'ice', 'cream', 'likes', 'He'",
-                    options: ["ice", "cream", "likes", "He"],
-                    correctAnswer: ["He", "likes", "ice", "cream"],
-                    explanation: "Правильна відповідь - 'He likes ice cream.' Порядок слів має бути таким."
-                },
-                {
-                    type: "true-false",
-                    question: "The word 'childrens' is correct in English grammar.",
-                    options: ["True", "False"],
-                    correctAnswer: 1,
-                    explanation: "Правильна відповідь - False. 'Childrens' не є правильною формою множини слова 'child'."
-                },
-                {
-                    type: "mcq",
-                    question: "Which of the following is a synonym for 'happy'?",
-                    options: ["Sad", "Joyful", "Angry", "Tired"],
-                    correctAnswer: 1,
-                    explanation: "Правильна відповідь - Joyful. 'Happy' та 'joyful' мають схоже значення."
-                },
-                {
-                    type: "mcq",
-                    question: "Choose the correct sentence:",
-                    options: [
-                        "He don't like ice cream.",
-                        "He doesn't like ice cream.",
-                        "He didn't liked ice cream.",
-                        "He isn't like ice cream."
-                    ],
-                    correctAnswer: 1,
-                    explanation: "Правильна відповідь - He doesn't like ice cream. 'Don't' змінюється на 'doesn't' для 3-ї особи однини."
-                },
-                {
-                    type: "fill-in-the-blank",
-                    question: "What is the comparative form of 'good'?",
-                    correctAnswer: "better",
-                    explanation: "Правильна відповідь - Better. 'Good' має неправильну форму порівняння."
-                },
-                {
-                    type: "mcq",
-                    question: "Which of these is an adjective?",
-                    options: ["Quickly", "Quick", "Quickness", "Quicker"],
-                    correctAnswer: 1,
-                    explanation: "Правильна відповідь - Quick. Це прикметник, що описує іменник."
-                },
-                {
-                    type: "true-false",
-                    question: "The word 'cats' is the plural form of 'cat'.",
-                    options: ["True", "False"],
-                    correctAnswer: 0,
-                    explanation: "Правильна відповідь - True. 'Cats' є правильною множиною для 'cat'."
-                },
-                {
-                    type: "mcq",
-                    question: "Which sentence is correct?",
-                    options: [
-                        "She were going to the store.",
-                        "They is going to the store.",
-                        "He are going to the store.",
-                        "They are going to the store."
-                    ],
-                    correctAnswer: 3,
-                    explanation: "Правильна відповідь - They are going to the store. Всі інші варіанти мають неправильний дієслово-підмет."
-                },
-                {
-                    type: "fill-in-the-blank",
-                    question: "What is the opposite of 'hot'?",
-                    correctAnswer: "cold",
-                    explanation: "Правильна відповідь - Cold. Це антонім слова 'hot'."
-                },
-                {
-                    type: "drag-and-drop",
-                    question: "Arrange the words to form a correct question: 'is', 'your', 'What', 'name'",
-                    options: ["is", "your", "What", "name"],
-                    correctAnswer: ["What", "is", "your", "name"],
-                    explanation: "Правильна відповідь - 'What is your name?' Порядок слів має бути таким."
-                },
-                {
-                    type: "true-false",
-                    question: "The word 'quick' is an adverb.",
-                    options: ["True", "False"],
-                    correctAnswer: 1,
-                    explanation: "Правильна відповідь - False. 'Quick' є прикметником, а 'quickly' є прислівником."
-                },
-                {
-                    type: "mcq",
-                    question: "Which of the following is a correct sentence?",
-                    options: [
-                        "He don't has a car.",
-                        "He doesn't have a car.",
-                        "He didn't have no car.",
-                        "He don't got a car."
-                    ],
-                    correctAnswer: 1,
-                    explanation: "Правильна відповідь - He doesn't have a car. Це правильна структура заперечення."
-                },
-                {
-                    type: "fill-in-the-blank",
-                    question: "What is the past participle of 'run'?",
-                    correctAnswer: "run",
-                    explanation: "Правильна відповідь - Run. 'Run' має однакову базову та минулу партиципійну форму."
-                }
-            ];
-
-            // Shuffle the questions for randomization
-            function shuffle(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-            }
-
-            shuffle(quizData);
-
-            function generateQuiz() {
-                $('#quizForm').empty();
-                $('#result').empty();
-
-                quizData.forEach((data, index) => {
-                    let questionHtml = `<div class="mb-4"><h5>Question ${index + 1}: ${data.question}</h5>`;
-
-                    switch (data.type) {
-                        case "mcq":
-                            questionHtml += data.options.map((option, i) => `
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="question${index}" id="question${index}_option${i}" value="${i}">
-                                    <label class="form-check-label" for="question${index}_option${i}">${option}</label>
-                                </div>`).join('');
-                            break;
-
-                        case "fill-in-the-blank":
-                            questionHtml += `
-                                <input type="text" class="form-control" id="question${index}_input" placeholder="Type your answer here">`;
-                            break;
-
-                        case "drag-and-drop":
-                            questionHtml += `<div class="drag-container" id="drag-container${index}">`;
-                            questionHtml += data.options.map((option, i) => `
-                                <div class="draggable-item" draggable="true" data-index="${i}">${option}</div>`).join('');
-                            questionHtml += `</div>`;
-                            break;
-
-                        case "true-false":
-                            questionHtml += data.options.map((option, i) => `
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="question${index}" id="question${index}_option${i}" value="${i}">
-                                    <label class="form-check-label" for="question${index}_option${i}">${option}</label>
-                                </div>`).join('');
-                            break;
-                    }
-
-                    questionHtml += `<div class="alert explanation" id="explanation${index}" style="display: none;">
-                                        <strong>Помилка: </strong> ${data.explanation}
-                                     </div></div>`;
-                    $('#quizForm').append(questionHtml);
-
-                    // If drag-and-drop, add functionality
-                    if (data.type === "drag-and-drop") {
-                        addDragAndDropHandlers(index, data.correctAnswer);
-                    }
-                });
-            }
-
-            // Add drag-and-drop functionality
-            function addDragAndDropHandlers(questionIndex, correctOrder) {
-                const dragContainer = document.getElementById(`drag-container${questionIndex}`);
-
-                dragContainer.addEventListener('dragstart', function (e) {
-                    if (e.target && e.target.classList.contains('draggable-item')) {
-                        e.dataTransfer.setData('text/plain', e.target.dataset.index);
-                    }
-                });
-
-                dragContainer.addEventListener('dragover', function (e) {
-                    e.preventDefault();
-                });
-
-                dragContainer.addEventListener('drop', function (e) {
-                    e.preventDefault();
-                    const droppedIndex = e.dataTransfer.getData('text/plain');
-                    const draggedElement = dragContainer.querySelector(`[data-index='${droppedIndex}']`);
-                    dragContainer.appendChild(draggedElement);
-                });
-            }
-
-            generateQuiz();
-
-            // Handle form submission
-            $('#submitBtn').on('click', function (event) {
-                event.preventDefault();
-                let score = 0;
-
-                quizData.forEach((data, index) => {
-                    let isCorrect = false;
-
-                    switch (data.type) {
-                        case "mcq":
-                        case "true-false":
-                            const selectedOption = $(`input[name=question${index}]:checked`).val();
-                            isCorrect = selectedOption == data.correctAnswer;
-                            break;
-
-                        case "fill-in-the-blank":
-                            const userAnswer = $(`#question${index}_input`).val().trim().toLowerCase();
-                            isCorrect = userAnswer === data.correctAnswer.toLowerCase();
-                            break;
-
-                        case "drag-and-drop":
-                            const draggedOrder = [];
-                            $(`#drag-container${index} .draggable-item`).each(function () {
-                                draggedOrder.push($(this).text());
-                            });
-                            isCorrect = JSON.stringify(draggedOrder) === JSON.stringify(data.correctAnswer);
-                            break;
-                    }
-
-                    if (isCorrect) {
-                        score++;
-                        $(`#explanation${index}`).hide();
-                    } else {
-                        $(`#explanation${index}`).show();
-                    }
-                });
-
-                const resultMessage = `
-                    <div class="alert ${score === quizData.length ? 'alert-success' : 'alert-warning'}">
-                        ${score === quizData.length ? 'Вітаємо! Всі відповіді правильні.' : `Ваш результат: ${score} з ${quizData.length}.`}
-                    </div>`;
-                $('#result').append(resultMessage);
-            });
-        });
-    </script>
+    <!-- Bootstrap JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript File -->
+    <script src="script.js"></script>
 </body>
 
 </html>

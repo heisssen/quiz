@@ -1,0 +1,33 @@
+.correct-answer {
+    border: 2px solid #28a745;
+    background-color: #d4edda;
+}
+
+.wrong-answer {
+    border: 2px solid #dc3545;
+    background-color: #f8d7da;
+}
+
+.drag-container {
+    border: 2px dashed #007bff;
+    padding: 10px;
+    min-height: 50px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.draggable-item {
+    padding: 5px 10px;
+    border: 1px solid #007bff;
+    margin: 5px;
+    cursor: grab;
+    background-color: #e2e6ea;
+}
+
+.hidden {
+    display: none;
+}
+
+#progressBarContainer {
+    height: 25px;
+}
